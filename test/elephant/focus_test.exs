@@ -3,10 +3,19 @@ defmodule Elephant.FocusTest do
   alias Elephant.Clock
 
   import Mox
+  setup :set_mox_global
   setup :verify_on_exit!
 
   def to_stream(list) do
     list |> Stream.map(& &1)
+  end
+
+  defmodule FakeCallback do
+    def run(destination, msg) do
+      send(destination, msg)
+
+      :ok
+    end
   end
 
   test "schedules work on init" do
@@ -16,20 +25,34 @@ defmodule Elephant.FocusTest do
   end
 
   test "fetches and runs callbacks" do
+    test_pid = self()
+
     callbacks = [
       {
+        "memory-id-1",
         Clock.time_travel(DateTime.utc_now(), {1, :seconds}),
-        {Kernel, :send, [self(), :done_first]}
+        {FakeCallback, :run, [test_pid, :done_first]}
       },
       {
+        "memory-id-2",
         Clock.time_travel(DateTime.utc_now(), {2, :seconds}),
-        {Kernel, :send, [self(), :done_second]}
+        {FakeCallback, :run, [test_pid, :done_second]}
       }
     ]
 
     Elephant.StoreMock
-    |> expect(:fetch, fn _ ->
-      {:ok, to_stream(callbacks)}
+    |> expect(:fetch, fn _up_to_datetime, cb ->
+      callbacks
+      |> to_stream()
+      |> cb.()
+
+      :ok
+    end)
+
+    Elephant.StoreMock
+    |> expect(:delete, 2, fn
+      "memory-id-1" -> :ok
+      "memory-id-2" -> :ok
     end)
 
     Elephant.Focus.handle_info(:next, :no_state)
@@ -38,12 +61,12 @@ defmodule Elephant.FocusTest do
     refute_receive(:done_first, 990)
 
     # then should receive within next x milliseconds
-    assert_receive(:done_first, 20)
+    assert_receive(:done_first, 100)
 
     # still waiting for second message
     refute_receive(:done_second, 990)
 
     # then should receive within next x milliseconds
-    assert_receive(:done_second, 20)
+    assert_receive(:done_second, 50)
   end
 end
