@@ -44,4 +44,14 @@ defmodule Test.Example.Store.PostgresTest do
                end)
     end
   end
+
+  describe "deletes a memory" do
+    test "when memory exists" do
+      assert :ok == Example.PostgresStore.delete("c8d10874-f3eb-4b8b-92d1-877160703da8")
+    end
+
+    test "when memory does not exists" do
+      assert :ok == Example.PostgresStore.delete("c8d10874-f3eb-4b8b-92d1-877160703da9")
+    end
+  end
 end

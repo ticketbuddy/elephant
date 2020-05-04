@@ -36,8 +36,10 @@ defmodule Elephant.Store.Postgres do
         end
       end
 
-      def delete(action_id) do
-        # :ok | :error
+      def delete(memory_id) do
+        @repo.delete(%Schema.Memory{memory_id: memory_id}, stale_error_field: :errors)
+
+        :ok
       end
     end
   end
