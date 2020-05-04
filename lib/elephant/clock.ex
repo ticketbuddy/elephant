@@ -1,5 +1,5 @@
 defmodule Elephant.Clock do
-  @valid_measures [:hours, :minutes]
+  @valid_measures [:hours, :minutes, :seconds]
 
   @doc ~S"""
   Parses the given `line` into a command.
