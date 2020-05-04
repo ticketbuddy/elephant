@@ -14,11 +14,11 @@ Elephant.remember(DateTime.t(), {Module, func, args})
 #### Design
 
 ##### Storage
-An action is stored with a target `timestamp`, `failure_strategy`, `app_idempotency_key` and the `module`, `function` and `arguments`
+An action is stored with a target `timestamp`, `failure_strategy` and the `module`, `function` and `arguments`
 that are used when the target time is reached.
 
 If an action fails, the `failure_strategy` value is then used to determine what happens next.
 - `:ignore` - will accept the failure.
 - `{:retry, {5, :hours}}` - will retry until success every 5 hours.
 
-The `app_idempotency_key` value is sent with every callback to ensure actions are only executed exactly once.
+It is recommended, that the callback includes an `idempotency_key` as a callback can be called multiple times.
