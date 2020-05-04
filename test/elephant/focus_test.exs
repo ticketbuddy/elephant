@@ -28,8 +28,12 @@ defmodule Elephant.FocusTest do
     ]
 
     Elephant.StoreMock
-    |> expect(:fetch, fn _ ->
-      {:ok, to_stream(callbacks)}
+    |> expect(:fetch, fn _up_to_datetime, cb ->
+      callbacks
+      |> to_stream()
+      |> cb.()
+
+      :ok
     end)
 
     Elephant.Focus.handle_info(:next, :no_state)

@@ -17,11 +17,11 @@ defmodule Elephant.Focus do
   def handle_info(:next, _state) do
     schedule_work()
 
-    {:ok, stream} = @store.fetch(fetch_up_to_datetime())
-
-    stream
-    |> Stream.each(&wait_and_run_callback/1)
-    |> Stream.run()
+    @store.fetch(fetch_up_to_datetime(), fn stream ->
+      stream
+      |> Stream.each(&wait_and_run_callback/1)
+      |> Stream.run()
+    end)
   end
 
   def schedule_work do

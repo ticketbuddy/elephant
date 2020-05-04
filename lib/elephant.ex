@@ -7,7 +7,7 @@ defmodule Elephant do
 
   @store Application.get_env(:elephant, :store, Elephant.StoreMock)
 
-  def remember(time_travel_opts, action, now \\ DateTime.utc_now()) do
+  def remember(time_travel_opts, action, now \\ Clock.now()) do
     %Memory{
       at: Clock.time_travel(now, time_travel_opts),
       action: action

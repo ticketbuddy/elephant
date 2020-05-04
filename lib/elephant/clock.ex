@@ -17,4 +17,8 @@ defmodule Elephant.Clock do
     opts = Keyword.new([{measurement, value}])
     Timex.shift(datetime, opts)
   end
+
+  def now do
+    DateTime.utc_now() |> DateTime.truncate(:second)
+  end
 end
