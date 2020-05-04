@@ -15,9 +15,6 @@ defmodule Elephant.Focus do
 
   def handle_info(:next, state) do
     schedule_work()
-    # TODO load the next memories within the
-    # @polling_interval amount, and call send_after for each.
-
     fetch_up_to_datetime =
       Elephant.Clock.time_travel(DateTime.utc_now(), {@polling_interval, :seconds})
 
