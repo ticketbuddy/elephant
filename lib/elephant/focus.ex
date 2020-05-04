@@ -25,7 +25,7 @@ defmodule Elephant.Focus do
       Logger.info("Running the stream")
 
       stream
-      |> Stream.each(&wait_and_run_callback/1)
+      |> Stream.map(&wait_and_run_callback/1)
       |> Stream.run()
     end)
 
@@ -37,9 +37,20 @@ defmodule Elephant.Focus do
     Process.send_after(self(), :next, @polling_interval * 1_000)
   end
 
-  defp wait_and_run_callback({target, {mod, func, args}}) do
+  defp wait_and_run_callback({memory_id, target, {mod, func, args}}) do
     Logger.info("#{inspect({target, mod, func, args})}")
-    :timer.apply_after(wait_time(target), mod, func, args)
+    :timer.apply_after(wait_time(target), __MODULE__, :do_apply, [memory_id, {mod, func, args}])
+  end
+
+  def do_apply(memory_id, {mod, func, args}) do
+    apply(mod, func, args)
+    |> case do
+      :ok ->
+        @store.delete(memory_id)
+
+      _error ->
+        :error
+    end
   end
 
   defp wait_time(target) do

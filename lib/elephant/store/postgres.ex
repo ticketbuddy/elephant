@@ -27,7 +27,7 @@ defmodule Elephant.Store.Postgres do
         @repo.transaction(fn ->
           stream
           |> Stream.map(fn memory ->
-            {memory.target, :erlang.binary_to_term(memory.action)}
+            {memory.memory_id, memory.target, :erlang.binary_to_term(memory.action)}
           end)
           |> callback.()
         end)
