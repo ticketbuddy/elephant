@@ -7,7 +7,7 @@ defmodule Elephant.Store do
   @type failure_strategy ::
           {:retry, retry_options} | :ignore
 
-  @callback store(timestamp, failure_strategy, callback) :: :ok | :error
+  @callback put(Memory.t()) :: :ok | :error
   @callback fetch_up_to(timestamp) :: {:ok, Stream.t()} | :error
   @callback delete(action_id) :: :ok | :error
 end

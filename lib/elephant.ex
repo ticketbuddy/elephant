@@ -3,12 +3,15 @@ defmodule Elephant do
   Documentation for Elephant.
   """
 
-  alias Elephant.Clock
+  alias Elephant.{Clock, Memory}
 
   @store Application.get_env(:elephant, :store, Elephant.StoreMock)
 
-  def exec(time_travel_opts, payload, now \\ DateTime.utc_now()) do
-    # @store
-    Clock.time_travel(now, time_travel_opts)
+  def remember(time_travel_opts, action, now \\ DateTime.utc_now()) do
+    %Memory{
+      at: Clock.time_travel(now, time_travel_opts),
+      action: action
+    }
+    |> @store.put()
   end
 end
