@@ -28,16 +28,16 @@ defmodule Elephant.FocusTest do
 
     Elephant.Focus.handle_info(:next, :no_state)
 
-    # no message for first 999 milliseconds
-    refute_receive(:done_first, 999)
+    # no message for first 900 milliseconds
+    refute_receive(:done_first, 995)
 
-    # then should receive within next 2 milliseconds
-    assert_receive(:done_first, 2)
+    # then should receive within next x milliseconds
+    assert_receive(:done_first, 10)
 
     # still waiting for second message
     refute_receive(:done_second, 1_000)
 
-    # then should receive within next 2 milliseconds
-    assert_receive(:done_second, 2)
+    # then should receive within next x milliseconds
+    assert_receive(:done_second, 5)
   end
 end

@@ -15,6 +15,7 @@ defmodule Elephant.Focus do
 
   def handle_info(:next, state) do
     schedule_work()
+
     fetch_up_to_datetime =
       Elephant.Clock.time_travel(DateTime.utc_now(), {@polling_interval, :seconds})
 
@@ -22,7 +23,7 @@ defmodule Elephant.Focus do
 
     stream
     |> Stream.each(fn {target, {mod, func, args}} ->
-      wait_time = max(DateTime.diff(target, DateTime.utc_now(), :second), 0) * 1_000
+      wait_time = max(DateTime.diff(target, DateTime.utc_now(), :millisecond), 0)
 
       :timer.apply_after(wait_time, mod, func, args)
     end)
