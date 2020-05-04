@@ -26,9 +26,12 @@ defmodule Test.Example.Store.PostgresTest do
       assert :ok ==
                Example.PostgresStore.fetch(up_to_datetime, fn stream ->
                  assert [
-                          {~U[2020-01-04 20:12:14Z], {IO, :puts, ["Hello James!"]}},
-                          {~U[2020-02-04 20:12:14Z], {IO, :puts, ["Hello there!"]}},
-                          {~U[2020-05-04 20:12:14Z], {IO, :puts, ["Hello World!"]}}
+                          {"c8d10874-f3eb-4b8b-92d1-877160703da5", ~U[2020-01-04 20:12:14Z],
+                           {IO, :puts, ["Hello James!"]}},
+                          {"c8d10874-f3eb-4b8b-92d1-877160703da8", ~U[2020-02-04 20:12:14Z],
+                           {IO, :puts, ["Hello there!"]}},
+                          {"c8d10874-f3eb-4b8b-92d1-877160703da7", ~U[2020-05-04 20:12:14Z],
+                           {IO, :puts, ["Hello World!"]}}
                         ] == Enum.to_list(stream)
                end)
     end
@@ -39,7 +42,8 @@ defmodule Test.Example.Store.PostgresTest do
       assert :ok ==
                Example.PostgresStore.fetch(up_to_datetime, fn stream ->
                  assert [
-                          {~U[2020-01-04 20:12:14Z], {IO, :puts, ["Hello James!"]}}
+                          {"c8d10874-f3eb-4b8b-92d1-877160703da5", ~U[2020-01-04 20:12:14Z],
+                           {IO, :puts, ["Hello James!"]}}
                         ] == Enum.to_list(stream)
                end)
     end
