@@ -35,9 +35,9 @@ defmodule Elephant.FocusTest do
     assert_receive(:done_first, 10)
 
     # still waiting for second message
-    refute_receive(:done_second, 1_000)
+    refute_receive(:done_second, 995)
 
     # then should receive within next x milliseconds
-    assert_receive(:done_second, 5)
+    assert_receive(:done_second, 10)
   end
 end

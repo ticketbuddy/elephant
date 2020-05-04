@@ -23,14 +23,16 @@ defmodule Elephant.Focus do
 
     stream
     |> Stream.each(fn {target, {mod, func, args}} ->
-      wait_time = max(DateTime.diff(target, DateTime.utc_now(), :millisecond), 0)
-
-      :timer.apply_after(wait_time, mod, func, args)
+      :timer.apply_after(wait_time(target), mod, func, args)
     end)
     |> Stream.run()
   end
 
   def schedule_work do
     Process.send_after(self(), :next, @polling_interval * 1_000)
+  end
+
+  defp wait_time(target) do
+    max(DateTime.diff(target, DateTime.utc_now(), :millisecond), 0)
   end
 end
