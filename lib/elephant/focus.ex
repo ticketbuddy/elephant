@@ -13,18 +13,13 @@ defmodule Elephant.Focus do
     {:ok, state}
   end
 
-  def handle_info(:next, state) do
+  def handle_info(:next, _state) do
     schedule_work()
 
-    fetch_up_to_datetime =
-      Elephant.Clock.time_travel(DateTime.utc_now(), {@polling_interval, :seconds})
-
-    {:ok, stream} = @store.fetch(fetch_up_to_datetime)
+    {:ok, stream} = @store.fetch(fetch_up_to_datetime())
 
     stream
-    |> Stream.each(fn {target, {mod, func, args}} ->
-      :timer.apply_after(wait_time(target), mod, func, args)
-    end)
+    |> Stream.each(&wait_and_run_callback/1)
     |> Stream.run()
   end
 
@@ -32,7 +27,15 @@ defmodule Elephant.Focus do
     Process.send_after(self(), :next, @polling_interval * 1_000)
   end
 
+  defp wait_and_run_callback({target, {mod, func, args}}) do
+    :timer.apply_after(wait_time(target), mod, func, args)
+  end
+
   defp wait_time(target) do
     max(DateTime.diff(target, DateTime.utc_now(), :millisecond), 0)
+  end
+
+  defp fetch_up_to_datetime() do
+    Elephant.Clock.time_travel(DateTime.utc_now(), {@polling_interval, :seconds})
   end
 end
