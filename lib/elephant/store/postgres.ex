@@ -20,7 +20,7 @@ defmodule Elephant.Store.Postgres do
       def fetch(up_to_datetime, callback) do
         import Ecto.Query, only: [from: 2]
 
-        query = from m in Schema.Memory, select: m
+        query = from m in Schema.Memory, where: m.target <= ^up_to_datetime, order_by: m.target
 
         stream = @repo.all(query)
         @repo.transaction(fn() ->
@@ -30,6 +30,10 @@ defmodule Elephant.Store.Postgres do
           end)
           |> callback.()
         end)
+        |> case do
+          {:ok, true} -> :ok
+          _error -> :error
+        end
       end
 
       def delete(action_id) do
