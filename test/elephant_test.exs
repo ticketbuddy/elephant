@@ -14,6 +14,6 @@ defmodule ElephantTest do
       :ok
     end)
 
-    Elephant.remember(time_travel_opts, action, now)
+    assert :ok == Elephant.remember(time_travel_opts, action, now)
   end
 end
