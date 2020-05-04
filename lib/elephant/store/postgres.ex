@@ -7,23 +7,24 @@ defmodule Elephant.Store.Postgres do
       alias Elephant.Store.Postgres.Schema
 
       def put(memory = %Memory{}) do
-         @repo.insert(%Schema.Memory{
-           target: memory.at,
-           action: :erlang.term_to_binary(memory.action)
-          })
-          |> case do
-            {:ok, _memory} -> :ok
-            {:error, reason} -> :error
-          end
+        @repo.insert(%Schema.Memory{
+          target: memory.at,
+          action: :erlang.term_to_binary(memory.action)
+        })
+        |> case do
+          {:ok, _memory} -> :ok
+          {:error, reason} -> :error
+        end
       end
 
       def fetch(up_to_datetime, callback) do
         import Ecto.Query, only: [from: 2]
 
-        query = from m in Schema.Memory, where: m.target <= ^up_to_datetime, order_by: m.target
+        query = from(m in Schema.Memory, where: m.target <= ^up_to_datetime, order_by: m.target)
 
         stream = @repo.all(query)
-        @repo.transaction(fn() ->
+
+        @repo.transaction(fn ->
           stream
           |> Stream.map(fn memory ->
             {memory.target, :erlang.binary_to_term(memory.action)}

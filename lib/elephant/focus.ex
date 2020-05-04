@@ -1,11 +1,13 @@
 defmodule Elephant.Focus do
   use GenServer
+  require Logger
   @polling_interval Application.get_env(:elephant, :polling_interval_seconds)
   @store Application.get_env(:elephant, :store, Elephant.StoreMock)
   @startup_grace_period_ms 250
 
   def start_link(_opts) do
-    GenServer.start_link(__MODULE__, :no_state, name: :elephant_focus)
+    init_state = DateTime.utc_now()
+    GenServer.start_link(__MODULE__, init_state, name: :elephant_focus)
   end
 
   def init(state) do
@@ -14,21 +16,29 @@ defmodule Elephant.Focus do
     {:ok, state}
   end
 
-  def handle_info(:next, _state) do
+  def handle_info(:next, state) do
+    previous_up_to_datetime = state
+    next_up_to_datetime = next_up_to_datetime(previous_up_to_datetime)
     schedule_work()
 
-    @store.fetch(fetch_up_to_datetime(), fn stream ->
+    @store.fetch(next_up_to_datetime, fn stream ->
+      Logger.info("Running the stream")
+
       stream
       |> Stream.each(&wait_and_run_callback/1)
       |> Stream.run()
     end)
+
+    {:noreply, next_up_to_datetime}
   end
 
   def schedule_work do
+    Logger.info("Scheduling work")
     Process.send_after(self(), :next, @polling_interval * 1_000)
   end
 
   defp wait_and_run_callback({target, {mod, func, args}}) do
+    Logger.info("#{inspect({target, mod, func, args})}")
     :timer.apply_after(wait_time(target), mod, func, args)
   end
 
@@ -36,7 +46,7 @@ defmodule Elephant.Focus do
     max(DateTime.diff(target, DateTime.utc_now(), :millisecond), 0)
   end
 
-  defp fetch_up_to_datetime() do
-    Elephant.Clock.time_travel(DateTime.utc_now(), {@polling_interval, :seconds})
+  defp next_up_to_datetime(datetime) do
+    Elephant.Clock.time_travel(datetime, {@polling_interval, :seconds})
   end
 end
