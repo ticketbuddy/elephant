@@ -1,9 +1,9 @@
 defmodule Elephant.Store do
-  @type action_id :: String.t()
+  @type memory_id :: String.t()
   @callback put(Memory.t()) :: :ok | :error
 
   @doc ~s(Fetch memories up to the datetime)
-  @callback fetch(DateTime.t()) :: {:ok, list()} | :error
+  @callback fetch(DateTime.t()) :: {:ok, Stream.t()} | :error
 
-  @callback delete(action_id) :: :ok | :error
+  @callback delete(memory_id) :: :ok | :error
 end

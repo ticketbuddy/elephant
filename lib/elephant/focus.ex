@@ -4,7 +4,7 @@ defmodule Elephant.Focus do
   @store Application.get_env(:elephant, :store, Elephant.StoreMock)
   @startup_grace_period_ms 250
 
-  def start_link() do
+  def start_link(_opts) do
     GenServer.start_link(__MODULE__, :no_state, name: :elephant_focus)
   end
 
