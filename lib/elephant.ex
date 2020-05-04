@@ -3,16 +3,12 @@ defmodule Elephant do
   Documentation for Elephant.
   """
 
-  @doc """
-  Hello world.
+  alias Elephant.Clock
 
-  ## Examples
+  @store Application.get_env(:elephant, :store, Elephant.StoreMock)
 
-      iex> Elephant.hello()
-      :world
-
-  """
-  def hello do
-    :world
+  def exec(time_travel_opts, payload, now \\ DateTime.utc_now()) do
+    # @store
+    Clock.time_travel(now, time_travel_opts)
   end
 end

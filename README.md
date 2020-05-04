@@ -5,10 +5,10 @@ Use this library to dynamically create a list of reminders.
 #### Usage
 ```elixir
 # Cannot schedule for within next 1 minute
-Elephant.exec({1, :hour}, {Module, args})
+Elephant.exec({1, :hour}, {Module, func, args})
 
 # Schedule for a date in the distance future
-Elephant.exec(DateTime.t(), {Module, args})
+Elephant.exec(DateTime.t(), {Module, func, args})
 ```
 
 #### Design
