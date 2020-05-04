@@ -2,13 +2,14 @@ defmodule Elephant.Focus do
   use GenServer
   @polling_interval Application.get_env(:elephant, :polling_interval_seconds)
   @store Application.get_env(:elephant, :store, Elephant.StoreMock)
+  @startup_grace_period_ms 250
 
   def start_link() do
     GenServer.start_link(__MODULE__, :no_state, name: :elephant_focus)
   end
 
   def init(state) do
-    schedule_work()
+    Process.send_after(self(), :next, @startup_grace_period_ms)
 
     {:ok, state}
   end
