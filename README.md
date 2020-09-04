@@ -10,15 +10,3 @@ Elephant.remember({1, :hour}, {Module, func, args})
 # Schedule for a date in the distance future
 Elephant.remember(DateTime.t(), {Module, func, args})
 ```
-
-#### Design
-
-##### Storage
-An action is stored with a target `timestamp`, `failure_strategy` and the `module`, `function` and `arguments`
-that are used when the target time is reached.
-
-If an action fails, the `failure_strategy` value is then used to determine what happens next.
-- `:ignore` - will accept the failure.
-- `{:retry, {5, :hours}}` - will retry until success every 5 hours.
-
-It is recommended, that the callback includes an `idempotency_key` as a callback can be called multiple times.
