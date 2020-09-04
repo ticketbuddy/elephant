@@ -1,4 +1,4 @@
-defmodule Example.Repo.Migrations.Memory do
+defmodule Elephant.Repo.Migrations.Memory do
   use Ecto.Migration
 
   def change do
