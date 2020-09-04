@@ -7,7 +7,7 @@ defmodule Elephant.Store.PostgresTest do
   end
 
   test "stores a memory" do
-    assert :ok ==
+    assert {:ok, _memory_id} =
              PostgresTestDb.put(%Elephant.Memory{
                at: Elephant.Clock.now(),
                action: {IO, :puts, ["Hello World"]}

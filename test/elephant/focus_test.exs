@@ -19,7 +19,8 @@ defmodule Elephant.FocusTest do
   end
 
   test "schedules work on init" do
-    Elephant.Focus.init(:no_state)
+    opts = [store: Elephant.StoreMock, polling_interval_seconds: 1_000]
+    Elephant.Focus.init(opts)
 
     assert_receive(:next, 500)
   end
@@ -56,7 +57,7 @@ defmodule Elephant.FocusTest do
       "memory-id-2" -> :ok
     end)
 
-    Elephant.Focus.handle_info(:next, :no_state)
+    Elephant.Focus.handle_info(:next, {Elephant.StoreMock, 1_000})
 
     # no message for first 900 milliseconds
     refute_receive(:done_first, 900)

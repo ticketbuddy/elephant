@@ -8,7 +8,7 @@ defmodule Elephant.Store.Postgres do
       action: :erlang.term_to_binary(memory.action)
     })
     |> case do
-      {:ok, _memory} -> :ok
+      {:ok, memory} -> {:ok, memory.memory_id}
       {:error, reason} -> :error
     end
   end
