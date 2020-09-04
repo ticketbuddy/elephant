@@ -1,10 +1,14 @@
-defmodule Test.Example.Store.PostgresTest do
+defmodule Elephant.Store.PostgresTest do
   use ExUnit.Case
-  use Test.Support.Helper, repo: [Example.Repo]
+  use Test.Support.Helper, repo: [Test.Support.Repo]
+
+  defmodule PostgresTestDb do
+    use Elephant.Store.Postgres, repo: Test.Support.Repo
+  end
 
   test "stores a memory" do
     assert :ok ==
-             Example.PostgresStore.put(%Elephant.Memory{
+             PostgresTestDb.put(%Elephant.Memory{
                at: Elephant.Clock.now(),
                action: {IO, :puts, ["Hello World"]}
              })
@@ -15,7 +19,7 @@ defmodule Test.Example.Store.PostgresTest do
       up_to_datetime = ~U[2019-05-04 20:30:14Z]
 
       assert :ok ==
-               Example.PostgresStore.fetch(up_to_datetime, fn stream ->
+               PostgresTestDb.fetch(up_to_datetime, fn stream ->
                  assert Enum.to_list(stream) == []
                end)
     end
@@ -24,7 +28,7 @@ defmodule Test.Example.Store.PostgresTest do
       up_to_datetime = ~U[2020-10-04 21:12:14Z]
 
       assert :ok ==
-               Example.PostgresStore.fetch(up_to_datetime, fn stream ->
+               PostgresTestDb.fetch(up_to_datetime, fn stream ->
                  assert [
                           {"c8d10874-f3eb-4b8b-92d1-877160703da5", ~U[2020-01-04 20:12:14Z],
                            {IO, :puts, ["Hello James!"]}},
@@ -40,7 +44,7 @@ defmodule Test.Example.Store.PostgresTest do
       up_to_datetime = ~U[2020-01-04 21:12:14Z]
 
       assert :ok ==
-               Example.PostgresStore.fetch(up_to_datetime, fn stream ->
+               PostgresTestDb.fetch(up_to_datetime, fn stream ->
                  assert [
                           {"c8d10874-f3eb-4b8b-92d1-877160703da5", ~U[2020-01-04 20:12:14Z],
                            {IO, :puts, ["Hello James!"]}}
@@ -51,11 +55,11 @@ defmodule Test.Example.Store.PostgresTest do
 
   describe "deletes a memory" do
     test "when memory exists" do
-      assert :ok == Example.PostgresStore.delete("c8d10874-f3eb-4b8b-92d1-877160703da8")
+      assert :ok == PostgresTestDb.delete("c8d10874-f3eb-4b8b-92d1-877160703da8")
     end
 
     test "when memory does not exists" do
-      assert :ok == Example.PostgresStore.delete("c8d10874-f3eb-4b8b-92d1-877160703da9")
+      assert :ok == PostgresTestDb.delete("c8d10874-f3eb-4b8b-92d1-877160703da9")
     end
   end
 end
