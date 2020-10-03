@@ -27,7 +27,7 @@ defmodule Elephant.MixProject do
   defp deps do
     [
       {:timex, "~> 3.5"},
-      {:mox, "~> 0.5.2"},
+      {:mox, "~> 1.0.0"},
       {:ecto_sql, "~> 3.0"},
       {:postgrex, ">= 0.0.0"}
     ]
